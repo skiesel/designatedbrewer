@@ -138,7 +138,7 @@ function finishAndSave() {
 		JSON.stringify(schedule),
 		function(data) {
 			if(data === "success") {
-				showLocalMessage("Schedule Saved.");
+				sendNotification("Schedule Saved.");
 			}
 		}
 	);

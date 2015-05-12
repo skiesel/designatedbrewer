@@ -1,6 +1,4 @@
 {{template "header.html" .}}
-<audio id="alertSound" src="/sounds/alert.mp3"></audio>
-<audio id="doneSound" src="/sounds/done.mp3"></audio>
 
 <div class="row">
 	<div class="col-xs-12 text-center">
@@ -141,26 +139,26 @@ function checkTemperatureRanges(t0, t1) {
 		var spargeTemp = getFirstSpargeTemp();
 
 		if(!temp0InRange && Math.abs(schedule[step].Temperature - t0) <= temperatureThreshold) {
-			showLocalMessage("Mash temperature is within desired range.");
+			sendNotification("Mash temperature is within desired range.", null, null, false);
 			temp0InRange = true;
 		}
 		else if(!temp1InRange && Math.abs(spargeTemp - t1) <= temperatureThreshold) {
-			showLocalMessage("Sparge temperature is within desired range.");
+			sendNotification("Sparge temperature is within desired range.", null, null, false);
 			temp1InRange = true;
 		}
 		else if(temp0InRange && Math.abs(schedule[step].Temperature - t0) > temperatureThreshold) {
 			temp0InRange = false;
 			if(schedule[step].Temperature - t0 < temperatureThreshold) {
-				showLocalMessage("Mash temperature exceeds threshold");
+				sendNotification("Mash temperature exceeds threshold", "ALERT", null, false);
 			} else if(schedule[step].Temperature - t0 > -temperatureThreshold) {
-				showLocalMessage("Mash temperature dropped below threshold");
+				sendNotification("Mash temperature dropped below threshold", "ALERT", null, false);
 			}
 		}
 		else if(temp1InRange && Math.abs(spargeTemp - t1) > temperatureThreshold) {
 			if(spargeTemp - t1 < temperatureThreshold) {
-				showLocalMessage("Sparge temperature exceeds threshold");
+				sendNotification("Sparge temperature exceeds threshold", "ALERT", null, false);
 			} else if(spargeTemp - t1 > -temperatureThreshold) {
-				showLocalMessage("Sparge temperature dropped below threshold");
+				sendNotification("Sparge temperature dropped below threshold", "ALERT", null, false);
 			}
 		}		
 	}
@@ -171,14 +169,14 @@ function checkTemperatureRanges(t0, t1) {
 			var spargeTemp = schedule[step+1].Temperature;
 
 			if(!temp1InRange && Math.abs(spargeTemp - t1) <= temperatureThreshold) {
-				showLocalMessage("Sparge temperature is within desired range.");
+				sendNotification("Sparge temperature is within desired range.", null, null, false);
 				temp1InRange = true;
 			}
 			else if(temp1InRange && Math.abs(spargeTemp - t1) > temperatureThreshold) {
 			if(spargeTemp - t1 < temperatureThreshold) {
-				showLocalMessage("Sparge temperature exceeds threshold");
+				sendNotification("Sparge temperature exceeds threshold", "ALERT", null, false);
 			} else if(spargeTemp - t1 > -temperatureThreshold) {
-				showLocalMessage("Sparge temperature dropped below threshold");
+				sendNotification("Sparge temperature dropped below threshold", "ALERT", null, false);
 			}
 		}	
 		}
@@ -186,16 +184,15 @@ function checkTemperatureRanges(t0, t1) {
 	else if(schedule[step].Type === "BOIL") {
 		if(!temp0InRange && t0 >= 200) {
 			temp0InRange = true;
-			showLocalMessage("Approaching boiling temperature.");
+			sendNotification("Approaching boiling temperature.");
 		}
 	}
 	else if(schedule[step].Type === "CHILL") {
 		if(schedule[step].Temperature > t0) {
-			showLocalMessage("Chill temperature is within desired range.");
+			sendNotification("Chill temperature is within desired range.");
 		}
 	}
 }
-
 
 function refreshSensorReadings() {
 	$.get(
@@ -214,10 +211,9 @@ function countdownTimer() {
 	$("#timer").html(formatTime(timeRemaining));
 	timeRemaining.subtract(1, "seconds");
 	if(timeRemaining.seconds() <= 0) {
-		$("#doneSound")[0].play();
-		if(schedule[step].Type === "MASH") { showLocalMessage("Mash Step Complete."); }
-		else if(schedule[step].Type === "SPARGE") { showLocalMessage("Sparge Step Complete."); }
-		else if(schedule[step].Type === "BOIL") { showLocalMessage("Boil Step Complete."); }
+		if(schedule[step].Type === "MASH") { sendNotification("Mash Step Complete.", "DONE", null, null); }
+		else if(schedule[step].Type === "SPARGE") { sendNotification("Sparge Step Complete.", "DONE", null, null); }
+		else if(schedule[step].Type === "BOIL") { sendNotification("Boil Step Complete.", "DONE", null, null); }
 		step++;
 		showCurrentStep();
 
