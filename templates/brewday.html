@@ -191,7 +191,7 @@ function checkTemperatureRanges(t0, t1) {
 	}
 	else if(schedule[step].Type === "CHILL") {
 		if(schedule[step].Temperature > t0) {
-			showMessage("Chill temperature is within desired range.");
+			showLocalMessage("Chill temperature is within desired range.");
 		}
 	}
 }
@@ -215,8 +215,12 @@ function countdownTimer() {
 	timeRemaining.subtract(1, "seconds");
 	if(timeRemaining.seconds() <= 0) {
 		$("#doneSound")[0].play();
+		if(schedule[step].Type === "MASH") { showLocalMessage("Mash Step Complete."); }
+		else if(schedule[step].Type === "SPARGE") { showLocalMessage("Sparge Step Complete."); }
+		else if(schedule[step].Type === "BOIL") { showLocalMessage("Boil Step Complete."); }
 		step++;
 		showCurrentStep();
+
 		if(autoadvance) {
 			startTimer();
 		} else {
