@@ -23,7 +23,7 @@
 				<button id="resume" style="display:none;">resume</button>
 			</div>
 			<div class="col-xs-4">
-				<input id="autoadvance" type="checkbox" />auto-advance		
+				<input id="autoadvance" type="checkbox" />auto-advance
 			</div>
 		</div>
 	</div>
@@ -74,12 +74,15 @@ var schedule =
 	  {{range .Data.ChillSteps}} { Type : "CHILL", Temperature : {{.}} }, {{end}}
 	];
 
+var temperatureThreshold = 1;
 
 var step = 0;
 var autoadvance = false;
 var timer = null;
 var timeRemaining = null;
 var timeElapsed = null;
+var temp0InRange = false;
+var temp1InRange = false;
 
 $("#autoadvance").change(function() { autoadvance = !autoadvance; });
 
@@ -94,6 +97,15 @@ function formatTime(t) {
 	if(t.seconds() < 10) { str += "0" + t.seconds(); }
 	else { str += t.seconds(); }
 	return str;
+}
+
+function getFirstSpargeTemp() {
+	for(var i = 0; i < schedule.length; i++) {
+		if(schedule[i].Type === "SPARGE") {
+			return schedule[i].Temperature;
+		}
+	}
+	return -1;
 }
 
 function showCurrentStep() {
@@ -124,6 +136,67 @@ function showCurrentStep() {
 }
 showCurrentStep();
 
+function checkTemperatureRanges(t0, t1) {
+	if(schedule[step].Type === "MASH") {
+		var spargeTemp = getFirstSpargeTemp();
+
+		if(!temp0InRange && Math.abs(schedule[step].Temperature - t0) <= temperatureThreshold) {
+			showLocalMessage("Mash temperature is within desired range.");
+			temp0InRange = true;
+		}
+		else if(!temp1InRange && Math.abs(spargeTemp - t1) <= temperatureThreshold) {
+			showLocalMessage("Sparge temperature is within desired range.");
+			temp1InRange = true;
+		}
+		else if(temp0InRange && Math.abs(schedule[step].Temperature - t0) > temperatureThreshold) {
+			temp0InRange = false;
+			if(schedule[step].Temperature - t0 < temperatureThreshold) {
+				showLocalMessage("Mash temperature exceeds threshold");
+			} else if(schedule[step].Temperature - t0 > -temperatureThreshold) {
+				showLocalMessage("Mash temperature dropped below threshold");
+			}
+		}
+		else if(temp1InRange && Math.abs(spargeTemp - t1) > temperatureThreshold) {
+			if(spargeTemp - t1 < temperatureThreshold) {
+				showLocalMessage("Sparge temperature exceeds threshold");
+			} else if(spargeTemp - t1 > -temperatureThreshold) {
+				showLocalMessage("Sparge temperature dropped below threshold");
+			}
+		}		
+	}
+	else if(schedule[step].Type === "SPARGE") {
+		temp0InRange = false;
+
+		if(schedule[step+1].Type === "SPARGE") {
+			var spargeTemp = schedule[step+1].Temperature;
+
+			if(!temp1InRange && Math.abs(spargeTemp - t1) <= temperatureThreshold) {
+				showLocalMessage("Sparge temperature is within desired range.");
+				temp1InRange = true;
+			}
+			else if(temp1InRange && Math.abs(spargeTemp - t1) > temperatureThreshold) {
+			if(spargeTemp - t1 < temperatureThreshold) {
+				showLocalMessage("Sparge temperature exceeds threshold");
+			} else if(spargeTemp - t1 > -temperatureThreshold) {
+				showLocalMessage("Sparge temperature dropped below threshold");
+			}
+		}	
+		}
+	}
+	else if(schedule[step].Type === "BOIL") {
+		if(!temp0InRange && t0 >= 200) {
+			temp0InRange = true;
+			showLocalMessage("Approaching boiling temperature.");
+		}
+	}
+	else if(schedule[step].Type === "CHILL") {
+		if(schedule[step].Temperature > t0) {
+			showMessage("Chill temperature is within desired range.");
+		}
+	}
+}
+
+
 function refreshSensorReadings() {
 	$.get(
 		"/get-temperature-readings",
@@ -131,6 +204,7 @@ function refreshSensorReadings() {
 			var temps = $.parseJSON(data);
 			$("#temperature0").html(temps[0] + "&deg;F");
 			$("#temperature1").html(temps[1] + "&deg;F");
+			checkTemperatureRanges(temps[0], temps[1]);
 		}
 	);
 }
@@ -194,9 +268,7 @@ function sendAlert(subject, message) {
 	$.post(
 		"/send-alert",
 		JSON.stringify({ Subject : subject, Message : message }),
-		function(data) {
-
-		}
+		function(data) {}
 	);
 }
 
