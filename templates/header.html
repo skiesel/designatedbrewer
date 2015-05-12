@@ -2,55 +2,12 @@
 	<head>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+		<link rel="stylesheet" href="/css/header.css">
 
 		<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
+		<script type="text/javascript" src="/js/header.js"></script>
 
-		<style>
-			body {
-				height: 10px;
-				background: -webkit-linear-gradient(white, blue); /* For Safari 5.1 to 6.0 */
-				background: -o-linear-gradient(white, blue); /* For Opera 11.1 to 12.0 */
-				background: -moz-linear-gradient(white, blue); /* For Firefox 3.6 to 15 */
-				background: linear-gradient(white, blue); /* Standard syntax (must be last) */
-			}
-			div {
-				padding-top: 5px;
-				padding-bottom: 5px;
-			}
-		</style>
-
-		<script>
-			function sendNotification(message, sound, timeout, remote) {
-				showLocalMessage(message, timeout);
-				
-				if(sound === "ALERT") { $("#alertSound")[0].play(); }
-				else if(sound === "DONE") { $("#doneSound")[0].play(); }
-
-				if(remote) {
-					sendAlert(message, message);
-				}
-			}
-
-			function showLocalMessage(message, closeTimeout) {
-				$("#messageArea").html(message);
-				$("#alert").fadeIn();
-
-				if(typeof closeTimeout === "number") {
-					window.setTimeout(function() {
-						closeLocalMessage();
-					}, closeTimeout);
-				}
-			}
-
-			function closeLocalMessage() {
-				$("#alert").fadeOut();
-			}
-
-			$(document).ready(function() {
-				$("#closeLocalMessage").click(closeLocalMessage);
-			});
-		</script>
 	</head>
 	<body>
 	<div class="container-fluid">

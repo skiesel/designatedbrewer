@@ -20,6 +20,8 @@ func main() {
 	http.HandleFunc("/send-alert", handlers.AlertMessage)
 
 	http.Handle("/sounds/", http.StripPrefix("/sounds/", http.FileServer(http.Dir("sounds"))))
+	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("templates/js"))))
+	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("templates/css"))))
 
 	http.ListenAndServe(":8080", nil)
 }
