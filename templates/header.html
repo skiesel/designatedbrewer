@@ -43,7 +43,18 @@
 	</head>
 	<body>
 	<div class="container-fluid">
-	<div id="alert" class="row alert alert-warning" role="alert" style="display:none;">
-		<div id="messageArea" class="col-xs-11 text-center">TEST</div>
-		<div class="col-xs-1"><button id="closeLocalMessage" type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+	<div class="row">
+		<div class="col-xs-12">
+			<ul class="nav nav-tabs">
+				<li role="presentation" {{ if eq .Page "HOME" }}class="active"{{ end }}><a href="/">Home</a></li>
+				<li role="presentation" {{ if eq .Page "CREATE" }}class="active"{{ end }}><a href="/create">Create Schedule</a></li>
+				<li role="presentation" {{ if eq .Page "LOAD" }}class="active"{{ end }}><a href="/load">Load Schedule</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="row">
+		<div id="alert" class="row alert alert-warning" role="alert" style="display:none;">
+			<div id="messageArea" class="col-xs-11 text-center">TEST</div>
+			<div class="col-xs-1"><button id="closeLocalMessage" type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+		</div>
 	</div>

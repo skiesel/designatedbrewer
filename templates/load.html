@@ -1,10 +1,9 @@
 {{template "header.html" .}}
-
 <div class="col-xs-12">
 	<div class="row">
 		<div class="col-xs-4">
 			<select id="file" style="width: 100%;">
-			{{range .}}
+			{{range .Data}}
 				<option value="{{.Name}}">{{.Name}}</option>
 			{{end}}
 			</select>

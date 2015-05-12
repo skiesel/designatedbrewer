@@ -24,7 +24,7 @@ type schedule struct {
 func Create(w http.ResponseWriter, r *http.Request) {
 	t, err := template.ParseFiles("templates/create.html", "templates/header.html", "templates/footer.html")
 	if err == nil {
-		t.Execute(w, nil)
+		t.Execute(w, page{ Page : "CREATE" })
 	}
 }
 

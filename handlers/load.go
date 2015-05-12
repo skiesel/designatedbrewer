@@ -23,7 +23,7 @@ func Load(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	t.Execute(w, files)
+	t.Execute(w, page{ Page : "LOAD", Data : files })
 }
 
 func LoadFile(w http.ResponseWriter, r *http.Request) {
