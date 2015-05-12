@@ -1,62 +1,68 @@
 {{template "header.html" .}}
-<style>
-	.highlight {
-		color:red;
-	}
-</style>
 <audio id="alert" src="/sounds/alert.mp3"></audio>
 <audio id="done" src="/sounds/done.mp3"></audio>
 
-
-<div id="currentSchedule" style="width:100%; overflow:hidden;">
-	<div id="mashSteps">
-		{{range .MashSteps}}
-		<div class="scheduleStep mash" style="overflow:hidden;">
-			<div class="label" style="width:60%; display:inline-block; float:left;">Mash Step # </div>
-			<div class="temperature" style="width:15%; display:inline-block; float:left;">{{.Temperature}}&deg;F</div>
-			<div class="duration" style="width:15%; display:inline-block; float:left;">{{.Duration}}min</div>
-		</div>
-		{{end}}
-	</div>
-	<div id="spargeSteps" style="overflow:hidden;">
-		{{range .SpargeSteps}}
-		<div class="scheduleStep sparge">
-			<div class="label" style="width:60%; display:inline-block; float:left;">Sparge Step # </div>
-			<div class="temperature" style="width:15%; display:inline-block; float:left;">{{.Temperature}}&deg;F</div>
-			<div class="duration" style="width:15%; display:inline-block; float:left;">{{.Duration}}min</div>
-		</div>
-		{{end}}
-	</div>
-	<div id="boilSteps" style="overflow:hidden;">
-		{{range .BoilSteps}}
-		<div class="scheduleStep boil">
-			<div class="label" style="width:60%; display:inline-block; float:left;">Boil Step # </div>
-			<div class="duration" style="width:15%; display:inline-block; float:left;">{{.}}min</div>
-		</div>
-		{{end}}
-	</div>
-	<div id="chillSteps" style="overflow:hidden;">
-		{{range .ChillSteps}}
-		<div class="scheduleStep chill">
-			<div class="label" style="width:60%; display:inline-block; float:left;">Chill Step # </div>
-			<div class="temperature" style="width:15%; display:inline-block; float:left;">{{.}}&deg;F</div>
-		</div>
-		{{end}}
+<div class="row">
+	<div id="currentSchedule" class="col-xs-12">
+		<table class="table table-bordered">
+		
+			{{range .MashSteps}}
+			<tr class="scheduleStep mash">
+				<td class="stepType">Mash Step # </td>
+				<td class="temperature">{{.Temperature}}&deg;F</td>
+				<td class="duration">{{.Duration}}min</td>
+			</tr>
+			{{end}}
+			{{range .SpargeSteps}}
+			<tr class="scheduleStep sparge">
+				<td class="stepType">Sparge Step # </td>
+				<td class="temperature">{{.Temperature}}&deg;F</td>
+				<td class="duration">{{.Duration}}min</td>
+			</tr>
+			{{end}}
+			{{range .BoilSteps}}
+			<tr class="scheduleStep boil">
+				<td class="stepType">Boil Step # </td>
+				<td class="temperature"></td>
+				<td class="duration">{{.}}min</td>
+			</tr>
+			{{end}}
+			{{range .ChillSteps}}
+			<tr class="scheduleStep chil">
+				<td class="stepType">Chill Step # </td>
+				<td class="temperature">{{.}}&deg;F</td>
+				<td class="duration"></td>
+			</tr>
+			{{end}}
+		</table>
 	</div>
 </div>
 
-<div style="width:100%;">
-	<div id="timer" style="width:100%; text-align:center;">0</div>
-	<div id="temperature0" style="width:50%; display:inline-block; float:left;"></div>
-	<div id="temperature1" style="width:50%; display:inline-block; float:left;"></div>
-	<div style="width:100%; text-align:center;">
-		<button id="start">start step</button>
-		<button id="pause" style="display:none;">pause</button>
-		<button id="resume" style="display:none;">resume</button>
-		<input id="autoadvance" type="checkbox" />auto-advance
+
+<div class="row">
+	<div class="col-xs-12 text-center">
+		<div class="row">
+			<div id="timer" class="col-xs-12">0</div>
+		</div>
+		<div class="row">
+			<div id="temperature0" class="col-xs-6">
+			</div>
+			<div id="temperature1" class="col-xs-6">
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-4"></div>
+			<div class="col-xs-4">
+				<button id="start">start step</button>
+				<button id="pause" style="display:none;">pause</button>
+				<button id="resume" style="display:none;">resume</button>
+			</div>
+			<div class="col-xs-4">
+				<input id="autoadvance" type="checkbox" />auto-advance		
+			</div>
+		</div>
 	</div>
 </div>
-<button id="next">next</button>
 
 <script>
 var schedule =
@@ -78,9 +84,9 @@ $("#autoadvance").change(function() { autoadvance = !autoadvance; });
 
 function showCurrentStep() {
 	if(step > 0) {
-		$($(".scheduleStep")[step-1]).removeClass("highlight");
+		$($(".scheduleStep")[step-1]).removeClass("danger");
 	}
-	$($(".scheduleStep")[step]).addClass("highlight");
+	$($(".scheduleStep")[step]).addClass("danger");
 	timeRemaining = schedule[step].Duration;
 }
 showCurrentStep();

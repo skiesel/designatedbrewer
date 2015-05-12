@@ -1,5 +1,44 @@
 <html>
 	<head>
-		<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+
+		<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+
+		<style>
+			body {
+				height: 10px;
+				background: -webkit-linear-gradient(white, blue); /* For Safari 5.1 to 6.0 */
+				background: -o-linear-gradient(white, blue); /* For Opera 11.1 to 12.0 */
+				background: -moz-linear-gradient(white, blue); /* For Firefox 3.6 to 15 */
+				background: linear-gradient(white, blue); /* Standard syntax (must be last) */
+			}
+		</style>
+
+		<script>
+			function showLocalMessage(message, closeTimeout) {
+				$("#messageArea").html(message);
+				$("#alert").fadeIn();
+
+				if(typeof closeTimeout !== "undefined") {
+					window.setTimeout(function() {
+						closeLocalMessage();
+					}, closeTimeout);
+				}
+			}
+
+			function closeLocalMessage() {
+				$("#alert").fadeOut();
+			}
+
+			$(document).ready(function() {
+				$("#closeLocalMessage").click(closeLocalMessage);
+			});
+		</script>
 	</head>
 	<body>
+	<div class="container-fluid">
+	<div id="alert" class="row alert alert-warning" role="alert" style="display:none;">
+		<div id="messageArea" class="col-xs-11 text-center">TEST</div>
+		<div class="col-xs-1"><button id="closeLocalMessage" type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+	</div>

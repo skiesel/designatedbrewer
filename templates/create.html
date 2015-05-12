@@ -1,32 +1,50 @@
 {{template "header.html" .}}
-<div style="width:100%">
-	<div id="scheduleAdditions" style="width:50%; display:inline-block; float:left;">
-		<div id="temperatureWrapper">
-			<input type="range" min="0" max="212" value="0" id="temperature" />
-			<span id="temperatureValue">0</span>&deg;F
-		</div>
-		<div id="durationWrapper">
-			<input type="range" min="0" max="120" value="0" id="duration" />
-			<span id="durationValue">0</span>min
-		</div>
-
-		<div style="width:100%; text-align:center;">
-			<button id="previous"></button><br/>
-			<button id="add"></button><br/>
-			<button id="next"></button>
+<div class="row">
+	<div id="scheduleAdditions" class="col-xs-6">
+		<table class="table">
+			<tr id="temperatureWrapper">
+				<td colspan="2">
+					<input type="range" min="0" max="212" value="0" id="temperature" />
+				</td>
+				<td>
+					<span id="temperatureValue">0</span>&deg;F
+				</td>
+			</tr>
+			<tr id="durationWrapper">
+				<td colspan="2">
+					<input type="range" min="0" max="120" value="0" id="duration" />
+				</td>
+				<td>
+					<span id="durationValue">0</span>min
+				</td>
+			</tr>
+		</table>
+		<div class="text-center">
+			<div class="col-xs-12">
+				<button id="previous" class="btn btn-default"></button>
+			</div>
+			<div class="col-xs-12">
+				<button id="add" class="btn btn-default"></button>
+			</div>
+			<div class="col-xs-12">
+				<button id="next" class="btn btn-default"></button>
+			</div>
 		</div>
 	</div>
 
-	<div id="currentSchedule" style="width:50%; display:inline-block; float:left;">
-		<div class="scheduleStep template" style="display:none;">
-			<div class="label" style="width:60%; display:inline-block; float:left;"></div>
-			<div class="temperature" style="width:15%; display:inline-block; float:left;"></div>
-			<div class="duration" style="width:15%; display:inline-block; float:left;"></div>
-		</div>
-		<div id="mashSteps"></div>
-		<div id="spargeSteps"></div>
-		<div id="boilSteps"></div>
-		<div id="chillSteps"></div>
+	<div id="currentSchedule" class="col-xs-6">
+		<table class="table table-bordered">
+			<tr class="scheduleStep template" style="display:none;">
+				<td class="stepType"></td>
+				<td class="temperature"></td>
+				<td class="duration"></td>
+			</tr>
+		
+		<tr class="mashStep" style="display:none;"></tr>
+		<tr class="spargeStep" style="display:none;"></tr>
+		<tr class="boilStep" style="display:none;"></tr>
+		<tr class="chillStep" style="display:none;"></tr>
+		</table>
 	</div>
 </div>
 <script>
@@ -46,31 +64,31 @@ function mashUI() {
 
 function addMashStep() {
 	$row = $(".scheduleStep.template").clone();
-	$row.removeClass("template");
-	$row.find(".label").html("Mash Step #" + (schedule.MashSteps.length + 1));
+	$row.removeClass("template").addClass("mashStep");;;
+	$row.find(".stepType").html("Mash Step #" + (schedule.MashSteps.length + 1));
 	$row.find(".temperature").html($("#temperature").val() + "&deg;F");
 	$row.find(".duration").html($("#duration").val() + "min");
 	$row.show();
-	$("#mashSteps").append($row);
+	$("tr.mashStep:last").after($row);
 
 	schedule.MashSteps.push({ Temperature : $("#temperature").val(), Duration : $("#duration").val() } );
 }
 
 function spargeUI() {
 	$("#duration").show();
-	$("#previous").show().off("click").click(mashUI).html("back to mash");;
+	$("#previous").show().off("click").click(mashUI).html("back to mash");
 	$("#add").off("click").click(addSpargeStep).html("add sparge step");
 	$("#next").off("click").click(boilUI).html("go to boil");
 }
 
 function addSpargeStep() {
 	$row = $(".scheduleStep.template").clone();
-	$row.removeClass("template");
-	$row.find(".label").html("Sparge Step #" + (schedule.SpargeSteps.length + 1));
+	$row.removeClass("template").addClass("spargeStep");
+	$row.find(".stepType").html("Sparge Step #" + (schedule.SpargeSteps.length + 1));
 	$row.find(".temperature").html($("#temperature").val() + "&deg;F");
 	$row.find(".duration").html($("#duration").val() + "min");
 	$row.show();
-	$("#spargeSteps").append($row);
+	$("tr.spargeStep:last").after($row);
 
 	schedule.SpargeSteps.push({ Temperature : $("#temperature").val(), Duration : $("#duration").val() });
 }
@@ -85,11 +103,11 @@ function boilUI() {
 
 function addBoilStep() {
 	$row = $(".scheduleStep.template").clone();
-	$row.removeClass("template");
-	$row.find(".label").html("Boil Step #" + (schedule.BoilSteps.length + 1));
+	$row.removeClass("template").addClass("boilStep");
+	$row.find(".stepType").html("Boil Step #" + (schedule.BoilSteps.length + 1));
 	$row.find(".duration").html($("#duration").val() + "min");
 	$row.show();
-	$("#boilSteps").append($row);
+	$("tr.boilStep:last").after($row);
 
 	schedule.BoilSteps.push($("#duration").val());
 }
@@ -104,11 +122,11 @@ function chillUI() {
 
 function addChillStep() {
 	$row = $(".scheduleStep.template").clone();
-	$row.removeClass("template");
-	$row.find(".label").html("Chill Step #" + (schedule.ChillSteps.length + 1));
+	$row.removeClass("template").addClass("chillStep");
+	$row.find(".stepType").html("Chill Step #" + (schedule.ChillSteps.length + 1));
 	$row.find(".temperature").html($("#temperature").val() + "&deg;F");
 	$row.show();
-	$("#chillSteps").append($row);
+	$("tr.chillStep:last").after($row);
 
 	schedule.ChillSteps.push($("#temperature").val());
 }
@@ -119,7 +137,7 @@ function finishAndSave() {
 		JSON.stringify(schedule),
 		function(data) {
 			if(data === "success") {
-				alert("success");
+				showLocalMessage("Schedule Saved.");
 			}
 		}
 	);

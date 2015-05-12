@@ -1,30 +1,34 @@
 {{template "header.html" .}}
-<div style="width:50%; display:inline-block; float:left;">
-	<select id="file">
-	{{range .}}
-		<option value="{{.Name}}">{{.Name}}</option>
-	{{end}}
-	</select>
-	<button id="select">load</button>
-	<button id="confirm" style="display:none;">confirm</button>
-	
-	<form id="hiddenPostForm" method="POST" action="/brewday" style="display:none;">
-		<input name="schedule" type="text"/>
-	</form>
-</div>
-
-<div id="currentSchedule" style="width:50%; display:inline-block; float:left;">
-	<div class="scheduleStep template" style="display:none;">
-		<div class="label" style="width:60%; display:inline-block; float:left;"></div>
-		<div class="temperature" style="width:15%; display:inline-block; float:left;"></div>
-		<div class="duration" style="width:15%; display:inline-block; float:left;"></div>
+<div class="row">
+	<div class="col-xs-6">
+		<select id="file">
+		{{range .}}
+			<option value="{{.Name}}">{{.Name}}</option>
+		{{end}}
+		</select>
+		<button id="select" class="btn btn-default">load</button>
+		<button id="confirm" class="btn btn-default" style="display:none;">confirm</button>
+		
+		<form id="hiddenPostForm" method="POST" action="/brewday" style="display:none;">
+			<input name="schedule" type="text"/>
+		</form>
 	</div>
-	<div id="mashSteps"></div>
-	<div id="spargeSteps"></div>
-	<div id="boilSteps"></div>
-	<div id="chillSteps"></div>
-</div>
 
+	<div id="currentSchedule" class="col-xs-6">
+		<table class="table table-bordered">
+			<tr class="scheduleStep template" style="display:none;">
+				<td class="stepType"></td>
+				<td class="temperature"></td>
+				<td class="duration"></td>
+			</tr>
+		
+		<tr class="mashStep" style="display:none;"></tr>
+		<tr class="spargeStep" style="display:none;"></tr>
+		<tr class="boilStep" style="display:none;"></tr>
+		<tr class="chillStep" style="display:none;"></tr>
+		</table>
+	</div>
+</div>
 <script>
 var selectedFile = "";
 
@@ -33,6 +37,11 @@ $("#select").click(function() {
 		"load-file",
 		JSON.stringify({ Filename : $("#file").val() }),
 		function(data, textStatus, jqXHR) {
+			$("#mashSteps").empty();
+			$("#spargeSteps").empty();
+			$("#boilSteps").empty();
+			$("#chillSteps").empty();
+
 			$("#confirm").show();
 			selectedFile = $("#file").val();
 			displayFile(JSON.parse(data));
@@ -48,40 +57,40 @@ $("#confirm").click(function() {
 function displayFile(file) {
 	$.each(file.MashSteps, function(index, value) {
 		$row = $(".scheduleStep.template").clone();
-		$row.removeClass("template");
-		$row.find(".label").html("Mash Step #" + (index + 1));
+		$row.removeClass("template").addClass("mashStep");
+		$row.find(".stepType").html("Mash Step #" + (index + 1));
 		$row.find(".temperature").html(value.Temperature + "&deg;F");
 		$row.find(".duration").html(value.Duration + "min");
 		$row.show();
-		$("#mashSteps").append($row);
+		$("tr.mashStep:last").after($row);
 	});
 
 	$.each(file.SpargeSteps, function(index, value) {
 		$row = $(".scheduleStep.template").clone();
-		$row.removeClass("template");
-		$row.find(".label").html("Sparge Step #" + (index + 1));
+		$row.removeClass("template").addClass("spargeStep");
+		$row.find(".stepType").html("Sparge Step #" + (index + 1));
 		$row.find(".temperature").html(value.Temperature + "&deg;F");
 		$row.find(".duration").html(value.Duration + "min");
 		$row.show();
-		$("#spargeSteps").append($row);
+		$("tr.spargeStep:last").after($row);
 	});
 
 	$.each(file.BoilSteps, function(index, value) {
 		$row = $(".scheduleStep.template").clone();
-		$row.removeClass("template");
-		$row.find(".label").html("Boil Step #" + (index + 1));
+		$row.removeClass("template").addClass("boilStep");
+		$row.find(".stepType").html("Boil Step #" + (index + 1));
 		$row.find(".duration").html(value + "min");
 		$row.show();
-		$("#boilSteps").append($row);
+		$("tr.boilStep:last").after($row);
 	});
 
 	$.each(file.ChillSteps, function(index, value) {
 		$row = $(".scheduleStep.template").clone();
-		$row.removeClass("template");
-		$row.find(".label").html("Chill Step #" + (index + 1));
+		$row.removeClass("template").addClass("chillStep");
+		$row.find(".stepType").html("Chill Step #" + (index + 1));
 		$row.find(".temperature").html(value + "&deg;F");
 		$row.show();
-		$("#chillSteps").append($row);
+		$("tr.chillStep:last").after($row);
 	});
 }
 </script>
