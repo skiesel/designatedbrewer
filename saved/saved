@@ -1,1 +1,0 @@
-{"MashSteps":[{"Temperature":0,"Duration":0},{"Temperature":150,"Duration":0}],"SpargeSteps":[{"Temperature":150,"Duration":0},{"Temperature":150,"Duration":55}],"BoilSteps":[55,55,55,55],"ChillSteps":[49]}

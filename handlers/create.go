@@ -7,6 +7,7 @@ import (
 	"html/template"
 	"net/http"
 	"os"
+	"time"
 )
 
 type stepPair struct {
@@ -36,7 +37,9 @@ func SaveSchedule(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	file, err := os.Create("saved/saved")
+	now := time.Now()
+
+	file, err := os.Create("saved/"+now.Format("2006-01-02_3:04PM"))
 	if err != nil {
 		panic(err)
 	}
