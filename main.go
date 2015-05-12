@@ -19,5 +19,7 @@ func main() {
 
 	http.HandleFunc("/send-alert", handlers.AlertMessage)
 
+	http.Handle("/sounds/", http.StripPrefix("/sounds/", http.FileServer(http.Dir("sounds"))))
+
 	http.ListenAndServe(":8080", nil)
 }

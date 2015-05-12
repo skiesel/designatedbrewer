@@ -1,6 +1,31 @@
 {{template "header.html" .}}
-<audio id="alert" src="/sounds/alert.mp3"></audio>
-<audio id="done" src="/sounds/done.mp3"></audio>
+<audio id="alertSound" src="/sounds/alert.mp3"></audio>
+<audio id="doneSound" src="/sounds/done.mp3"></audio>
+
+<div class="row">
+	<div class="col-xs-12 text-center">
+		<div class="row">
+			<div id="timer" class="col-xs-12">0</div>
+		</div>
+		<div class="row">
+			<div id="temperature0" class="col-xs-6">
+			</div>
+			<div id="temperature1" class="col-xs-6">
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-4"></div>
+			<div class="col-xs-4">
+				<button id="start">start step</button>
+				<button id="pause" style="display:none;">pause</button>
+				<button id="resume" style="display:none;">resume</button>
+			</div>
+			<div class="col-xs-4">
+				<input id="autoadvance" type="checkbox" />auto-advance		
+			</div>
+		</div>
+	</div>
+</div>
 
 <div class="row">
 	<div id="currentSchedule" class="col-xs-12">
@@ -38,32 +63,6 @@
 	</div>
 </div>
 
-
-<div class="row">
-	<div class="col-xs-12 text-center">
-		<div class="row">
-			<div id="timer" class="col-xs-12">0</div>
-		</div>
-		<div class="row">
-			<div id="temperature0" class="col-xs-6">
-			</div>
-			<div id="temperature1" class="col-xs-6">
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-xs-4"></div>
-			<div class="col-xs-4">
-				<button id="start">start step</button>
-				<button id="pause" style="display:none;">pause</button>
-				<button id="resume" style="display:none;">resume</button>
-			</div>
-			<div class="col-xs-4">
-				<input id="autoadvance" type="checkbox" />auto-advance		
-			</div>
-		</div>
-	</div>
-</div>
-
 <script>
 var schedule =
 	[
@@ -77,17 +76,36 @@ var schedule =
 var step = 0;
 var autoadvance = false;
 var timer = null;
-var timeRemaining = 0;
-var timeElapsed = 0;
+var timeRemaining = null;
+var timeElapsed = null;
 
 $("#autoadvance").change(function() { autoadvance = !autoadvance; });
+
+function formatTime(t) {
+	var str = "";
+	if(t.hours() < 10) { str += "0" + t.hours(); }
+	else { str += t.hours(); }
+	str += ":";
+	if(t.minutes() < 10) { str += "0" + t.minutes(); }
+	else { str += t.minutes(); }
+	str += ":";
+	if(t.seconds() < 10) { str += "0" + t.seconds(); }
+	else { str += t.seconds(); }
+	return str;
+}
 
 function showCurrentStep() {
 	if(step > 0) {
 		$($(".scheduleStep")[step-1]).removeClass("danger");
 	}
 	$($(".scheduleStep")[step]).addClass("danger");
-	timeRemaining = schedule[step].Duration;
+	if(schedule[step].Type === "CHILL") {
+		timeElapsed = moment.duration(0);
+		$("#timer").html(formatTime(timeElapsed));
+	} else {
+		timeRemaining = moment.duration(parseInt(schedule[step].Duration), "minutes");
+		$("#timer").html(formatTime(timeRemaining));
+	}
 }
 showCurrentStep();
 
@@ -104,8 +122,10 @@ function refreshSensorReadings() {
 window.setInterval(refreshSensorReadings(),5000);
 
 function countdownTimer() {
-	$("#timer").html(timeRemaining--);
-	if(timeRemaining <= 0) {
+	$("#timer").html(formatTime(timeRemaining));
+	timeRemaining.subtract(1, "seconds");
+	if(timeRemaining.seconds() <= 0) {
+		$("#doneSound")[0].play();
 		step++;
 		showCurrentStep();
 		if(autoadvance) {
@@ -120,7 +140,8 @@ function countdownTimer() {
 }
 
 function countupTimer() {
-	$("#timer").html(timeElapsed++);
+	$("#timer").html(formatTime(timeElapsed));
+	timeElapsed.add(1, "seconds")
 }
 
 function startTimer() {
