@@ -108,10 +108,10 @@ function getFirstSpargeTemp() {
 
 function showCurrentStep() {
 	if(step > 0) {
-		$($(".scheduleStep")[step-1]).removeClass("danger");
+		$($(".scheduleStep")[step-1]).removeClass("warning");
 	}
 
-	$($(".scheduleStep")[step]).addClass("danger");
+	$($(".scheduleStep")[step]).addClass("warning");
 
 	if(schedule[step].Type === "CHILL") {
 		$("#temperature0Label").html("Wort Temp");
