@@ -25,7 +25,7 @@ type schedule struct {
 func Create(w http.ResponseWriter, r *http.Request) {
 	t, err := template.ParseFiles("templates/create.html", "templates/header.html", "templates/footer.html")
 	if err == nil {
-		t.Execute(w, page{ Page : "CREATE" })
+		t.Execute(w, page{Page: "CREATE"})
 	}
 }
 
@@ -39,7 +39,7 @@ func SaveSchedule(w http.ResponseWriter, r *http.Request) {
 
 	now := time.Now()
 
-	file, err := os.Create("saved/"+now.Format("2006-01-02_3:04PM"))
+	file, err := os.Create("saved/" + now.Format("2006-01-02_3:04PM"))
 	if err != nil {
 		panic(err)
 	}

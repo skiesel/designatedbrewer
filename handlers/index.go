@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"net/http"
 	"html/template"
+	"net/http"
 )
 
 type page struct {
@@ -16,5 +16,5 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	t.Execute(w, page{ Page : "HOME" })
+	t.Execute(w, page{Page: "HOME"})
 }
