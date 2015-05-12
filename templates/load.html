@@ -86,6 +86,7 @@ function displayFile(file) {
 		$row = $(".scheduleStep.template").clone();
 		$row.removeClass("template").addClass("boilStep");
 		$row.find(".stepType").html("Boil Step #" + (index + 1));
+		$row.find(".temperature").html("--");
 		$row.find(".duration").html(value + "min");
 		$row.show();
 		$("tr.boilStep:last").after($row);
@@ -96,6 +97,7 @@ function displayFile(file) {
 		$row.removeClass("template").addClass("chillStep");
 		$row.find(".stepType").html("Chill Step #" + (index + 1));
 		$row.find(".temperature").html(value + "&deg;F");
+		$row.find(".duration").html("--");
 		$row.show();
 		$("tr.chillStep:last").after($row);
 	});

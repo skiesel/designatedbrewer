@@ -20,7 +20,7 @@ func BrewDay(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t, err := template.ParseFiles("templates/brewday.html", "templates/header.html", "templates/footer.html")
-	t.Execute(w, sched)
+	t.Execute(w, page{ Page : "BREW", Data : sched })
 }
 
 func GetTemperatureReadings(w http.ResponseWriter, r *http.Request) {

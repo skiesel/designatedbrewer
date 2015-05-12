@@ -8,9 +8,11 @@
 			<div id="timer" class="col-xs-12">0</div>
 		</div>
 		<div class="row">
-			<div id="temperature0" class="col-xs-6">
+			<div class="col-xs-6">
+				<span id="temperature0Label"></span>&nbsp;<span id="temperature0"></span>
 			</div>
-			<div id="temperature1" class="col-xs-6">
+			<div class="col-xs-6">
+				<span id="temperature1Label"></span>&nbsp;<span id="temperature1"></span>
 			</div>
 		</div>
 		<div class="row">
@@ -31,32 +33,32 @@
 	<div id="currentSchedule" class="col-xs-12">
 		<table class="table table-bordered">
 		
-			{{range .MashSteps}}
+			{{range .Data.MashSteps}}
 			<tr class="scheduleStep mash">
 				<td class="stepType">Mash Step # </td>
 				<td class="temperature">{{.Temperature}}&deg;F</td>
 				<td class="duration">{{.Duration}}min</td>
 			</tr>
 			{{end}}
-			{{range .SpargeSteps}}
+			{{range .Data.SpargeSteps}}
 			<tr class="scheduleStep sparge">
 				<td class="stepType">Sparge Step # </td>
 				<td class="temperature">{{.Temperature}}&deg;F</td>
 				<td class="duration">{{.Duration}}min</td>
 			</tr>
 			{{end}}
-			{{range .BoilSteps}}
+			{{range .Data.BoilSteps}}
 			<tr class="scheduleStep boil">
 				<td class="stepType">Boil Step # </td>
-				<td class="temperature"></td>
+				<td class="temperature">--</td>
 				<td class="duration">{{.}}min</td>
 			</tr>
 			{{end}}
-			{{range .ChillSteps}}
+			{{range .Data.ChillSteps}}
 			<tr class="scheduleStep chil">
 				<td class="stepType">Chill Step # </td>
 				<td class="temperature">{{.}}&deg;F</td>
-				<td class="duration"></td>
+				<td class="duration">--</td>
 			</tr>
 			{{end}}
 		</table>
@@ -66,10 +68,10 @@
 <script>
 var schedule =
 	[
-	  {{range .MashSteps}} { Type : "MASH", Temperature : {{.Temperature}}, Duration : {{.Duration}} }, {{end}}
-	  {{range .SpargeSteps}} { Type : "SPARGE", Temperature : {{.Temperature}}, Duration : {{.Duration}} }, {{end}}
-	  {{range .BoilSteps}} { Type : "BOIL", Duration : {{.}} }, {{end}}
-	  {{range .ChillSteps}} { Type : "CHILL", Temperature : {{.}} }, {{end}}
+	  {{range .Data.MashSteps}} { Type : "MASH", Temperature : {{.Temperature}}, Duration : {{.Duration}} }, {{end}}
+	  {{range .Data.SpargeSteps}} { Type : "SPARGE", Temperature : {{.Temperature}}, Duration : {{.Duration}} }, {{end}}
+	  {{range .Data.BoilSteps}} { Type : "BOIL", Duration : {{.}} }, {{end}}
+	  {{range .Data.ChillSteps}} { Type : "CHILL", Temperature : {{.}} }, {{end}}
 	];
 
 
@@ -98,13 +100,26 @@ function showCurrentStep() {
 	if(step > 0) {
 		$($(".scheduleStep")[step-1]).removeClass("danger");
 	}
+
 	$($(".scheduleStep")[step]).addClass("danger");
+
 	if(schedule[step].Type === "CHILL") {
+		$("#temperature0Label").html("Wort Temp");
+		$("#temperature1Label").html("Chill Water Temp");
+
 		timeElapsed = moment.duration(0);
 		$("#timer").html(formatTime(timeElapsed));
 	} else {
 		timeRemaining = moment.duration(parseInt(schedule[step].Duration), "minutes");
 		$("#timer").html(formatTime(timeRemaining));
+
+		if(schedule[step].Type === "BOIL") {
+			$("#temperature0Label").html("Wort Temp");
+			$("#temperature1Label").html("Unused");
+		} else if(schedule[step].Type === "MASH" || schedule[step].Type === "SPARGE") {
+			$("#temperature0Label").html("Mash Temp");
+			$("#temperature1Label").html("Sparge Temp");
+		}
 	}
 }
 showCurrentStep();

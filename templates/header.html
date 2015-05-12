@@ -49,6 +49,7 @@
 				<li role="presentation" {{ if eq .Page "HOME" }}class="active"{{ end }}><a href="/">Home</a></li>
 				<li role="presentation" {{ if eq .Page "CREATE" }}class="active"{{ end }}><a href="/create">Create Schedule</a></li>
 				<li role="presentation" {{ if eq .Page "LOAD" }}class="active"{{ end }}><a href="/load">Load Schedule</a></li>
+				{{ if eq .Page "BREW" }}<li role="presentation" class="active"><a href="#">BREW!</a></li>{{ end }}
 			</ul>
 		</div>
 	</div>

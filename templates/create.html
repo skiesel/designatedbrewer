@@ -104,6 +104,7 @@ function addBoilStep() {
 	$row = $(".scheduleStep.template").clone();
 	$row.removeClass("template").addClass("boilStep");
 	$row.find(".stepType").html("Boil Step #" + (schedule.BoilSteps.length + 1));
+	$row.find(".temperature").html("--");
 	$row.find(".duration").html($("#duration").val() + "min");
 	$row.show();
 	$("tr.boilStep:last").after($row);
@@ -124,6 +125,7 @@ function addChillStep() {
 	$row.removeClass("template").addClass("chillStep");
 	$row.find(".stepType").html("Chill Step #" + (schedule.ChillSteps.length + 1));
 	$row.find(".temperature").html($("#temperature").val() + "&deg;F");
+	$row.find(".duration").html("--");
 	$row.show();
 	$("tr.chillStep:last").after($row);
 
