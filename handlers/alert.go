@@ -4,17 +4,16 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"github.com/skiesel/designatedbrewer/utils"
 	"net/http"
 	"net/mail"
 	"net/smtp"
-	"github.com/skiesel/designatedbrewer/utils"
 )
 
 type messageRequest struct {
 	Subject string
 	Message string
 }
-
 
 func AlertMessage(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
@@ -46,7 +45,6 @@ func AlertMessage(w http.ResponseWriter, r *http.Request) {
 	host := config.GetSetting("smtp server")
 	port := config.GetSetting("smtp port")
 	fullHost := host + ":" + port
-
 
 	auth := smtp.PlainAuth("", config.GetSetting("smtp user"), config.GetSetting("smtp password"), host)
 
