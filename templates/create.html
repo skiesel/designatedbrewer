@@ -1,0 +1,134 @@
+{{template "header.html" .}}
+<div style="width:100%">
+	<div id="scheduleAdditions" style="width:50%; display:inline-block; float:left;">
+		<div id="temperatureWrapper">
+			<input type="range" min="0" max="212" value="0" id="temperature" />
+			<span id="temperatureValue">0</span>&deg;F
+		</div>
+		<div id="durationWrapper">
+			<input type="range" min="0" max="120" value="0" id="duration" />
+			<span id="durationValue">0</span>min
+		</div>
+
+		<div style="width:100%; text-align:center;">
+			<button id="previous"></button><br/>
+			<button id="add"></button><br/>
+			<button id="next"></button>
+		</div>
+	</div>
+
+	<div id="currentSchedule" style="width:50%; display:inline-block; float:left;">
+		<div class="scheduleStep template" style="display:none;">
+			<div class="label" style="width:60%; display:inline-block; float:left;"></div>
+			<div class="temperature" style="width:15%; display:inline-block; float:left;"></div>
+			<div class="duration" style="width:15%; display:inline-block; float:left;"></div>
+		</div>
+		<div id="mashSteps"></div>
+		<div id="spargeSteps"></div>
+		<div id="boilSteps"></div>
+		<div id="chillSteps"></div>
+	</div>
+</div>
+<script>
+
+var schedule = {
+	MashSteps : [],
+	SpargeSteps : [],
+	BoilSteps : [],
+	ChillSteps : []
+}
+
+function mashUI() {
+	$("#previous").off("click").hide();
+	$("#add").off("click").click(addMashStep).html("add mash step");
+	$("#next").off("click").click(spargeUI).html("go to sparge");
+}
+
+function addMashStep() {
+	$row = $(".scheduleStep.template").clone();
+	$row.removeClass("template");
+	$row.find(".label").html("Mash Step #" + (schedule.MashSteps.length + 1));
+	$row.find(".temperature").html($("#temperature").val() + "&deg;F");
+	$row.find(".duration").html($("#duration").val() + "min");
+	$row.show();
+	$("#mashSteps").append($row);
+
+	schedule.MashSteps.push({ Temperature : $("#temperature").val(), Duration : $("#duration").val() } );
+}
+
+function spargeUI() {
+	$("#duration").show();
+	$("#previous").show().off("click").click(mashUI).html("back to mash");;
+	$("#add").off("click").click(addSpargeStep).html("add sparge step");
+	$("#next").off("click").click(boilUI).html("go to boil");
+}
+
+function addSpargeStep() {
+	$row = $(".scheduleStep.template").clone();
+	$row.removeClass("template");
+	$row.find(".label").html("Sparge Step #" + (schedule.SpargeSteps.length + 1));
+	$row.find(".temperature").html($("#temperature").val() + "&deg;F");
+	$row.find(".duration").html($("#duration").val() + "min");
+	$row.show();
+	$("#spargeSteps").append($row);
+
+	schedule.SpargeSteps.push({ Temperature : $("#temperature").val(), Duration : $("#duration").val() });
+}
+
+function boilUI() {
+	$("#temperatureWrapper").hide();
+	$("#durationWrapper").show();
+	$("#previous").show().off("click").click(spargeUI).html("back to sparge");;
+	$("#add").off("click").click(addBoilStep).html("add boil step");
+	$("#next").off("click").click(chillUI).html("go to chill");
+}
+
+function addBoilStep() {
+	$row = $(".scheduleStep.template").clone();
+	$row.removeClass("template");
+	$row.find(".label").html("Boil Step #" + (schedule.BoilSteps.length + 1));
+	$row.find(".duration").html($("#duration").val() + "min");
+	$row.show();
+	$("#boilSteps").append($row);
+
+	schedule.BoilSteps.push($("#duration").val());
+}
+
+function chillUI() {
+	$("#temperatureWrapper").show();
+	$("#durationWrapper").hide();
+	$("#previous").show().off("click").click(boilUI).html("back to boil");;
+	$("#add").off("click").click(addChillStep).html("add chill step");
+	$("#next").off("click").click(finishAndSave).html("save schedule");
+}
+
+function addChillStep() {
+	$row = $(".scheduleStep.template").clone();
+	$row.removeClass("template");
+	$row.find(".label").html("Chill Step #" + (schedule.ChillSteps.length + 1));
+	$row.find(".temperature").html($("#temperature").val() + "&deg;F");
+	$row.show();
+	$("#chillSteps").append($row);
+
+	schedule.ChillSteps.push($("#temperature").val());
+}
+
+function finishAndSave() {
+	$.post(
+		"/save-schedule",
+		JSON.stringify(schedule),
+		function(data) {
+			if(data === "success") {
+				alert("success");
+			}
+		}
+	);
+}
+
+mashUI();
+
+$("#temperature").mousemove(function() { $("#temperatureValue").html($("#temperature").val()); });
+$("#duration").mousemove(function() { $("#durationValue").html($("#duration").val()); });
+
+</script>
+{{template "footer.html" .}}

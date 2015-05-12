@@ -1,0 +1,162 @@
+{{template "header.html" .}}
+<style>
+	.highlight {
+		color:red;
+	}
+</style>
+<audio id="alert" src="/sounds/alert.mp3"></audio>
+<audio id="done" src="/sounds/done.mp3"></audio>
+
+
+<div id="currentSchedule" style="width:100%; overflow:hidden;">
+	<div id="mashSteps">
+		{{range .MashSteps}}
+		<div class="scheduleStep mash" style="overflow:hidden;">
+			<div class="label" style="width:60%; display:inline-block; float:left;">Mash Step # </div>
+			<div class="temperature" style="width:15%; display:inline-block; float:left;">{{.Temperature}}&deg;F</div>
+			<div class="duration" style="width:15%; display:inline-block; float:left;">{{.Duration}}min</div>
+		</div>
+		{{end}}
+	</div>
+	<div id="spargeSteps" style="overflow:hidden;">
+		{{range .SpargeSteps}}
+		<div class="scheduleStep sparge">
+			<div class="label" style="width:60%; display:inline-block; float:left;">Sparge Step # </div>
+			<div class="temperature" style="width:15%; display:inline-block; float:left;">{{.Temperature}}&deg;F</div>
+			<div class="duration" style="width:15%; display:inline-block; float:left;">{{.Duration}}min</div>
+		</div>
+		{{end}}
+	</div>
+	<div id="boilSteps" style="overflow:hidden;">
+		{{range .BoilSteps}}
+		<div class="scheduleStep boil">
+			<div class="label" style="width:60%; display:inline-block; float:left;">Boil Step # </div>
+			<div class="duration" style="width:15%; display:inline-block; float:left;">{{.}}min</div>
+		</div>
+		{{end}}
+	</div>
+	<div id="chillSteps" style="overflow:hidden;">
+		{{range .ChillSteps}}
+		<div class="scheduleStep chill">
+			<div class="label" style="width:60%; display:inline-block; float:left;">Chill Step # </div>
+			<div class="temperature" style="width:15%; display:inline-block; float:left;">{{.}}&deg;F</div>
+		</div>
+		{{end}}
+	</div>
+</div>
+
+<div style="width:100%;">
+	<div id="timer" style="width:100%; text-align:center;">0</div>
+	<div id="temperature0" style="width:50%; display:inline-block; float:left;"></div>
+	<div id="temperature1" style="width:50%; display:inline-block; float:left;"></div>
+	<div style="width:100%; text-align:center;">
+		<button id="start">start step</button>
+		<button id="pause" style="display:none;">pause</button>
+		<button id="resume" style="display:none;">resume</button>
+		<input id="autoadvance" type="checkbox" />auto-advance
+	</div>
+</div>
+<button id="next">next</button>
+
+<script>
+var schedule =
+	[
+	  {{range .MashSteps}} { Type : "MASH", Temperature : {{.Temperature}}, Duration : {{.Duration}} }, {{end}}
+	  {{range .SpargeSteps}} { Type : "SPARGE", Temperature : {{.Temperature}}, Duration : {{.Duration}} }, {{end}}
+	  {{range .BoilSteps}} { Type : "BOIL", Duration : {{.}} }, {{end}}
+	  {{range .ChillSteps}} { Type : "CHILL", Temperature : {{.}} }, {{end}}
+	];
+
+
+var step = 0;
+var autoadvance = false;
+var timer = null;
+var timeRemaining = 0;
+var timeElapsed = 0;
+
+$("#autoadvance").change(function() { autoadvance = !autoadvance; });
+
+function showCurrentStep() {
+	if(step > 0) {
+		$($(".scheduleStep")[step-1]).removeClass("highlight");
+	}
+	$($(".scheduleStep")[step]).addClass("highlight");
+	timeRemaining = schedule[step].Duration;
+}
+showCurrentStep();
+
+function refreshSensorReadings() {
+	$.get(
+		"/get-temperature-readings",
+		function(data) {
+			var temps = $.parseJSON(data);
+			$("#temperature0").html(temps[0] + "&deg;F");
+			$("#temperature1").html(temps[1] + "&deg;F");
+		}
+	);
+}
+window.setInterval(refreshSensorReadings(),5000);
+
+function countdownTimer() {
+	$("#timer").html(timeRemaining--);
+	if(timeRemaining <= 0) {
+		step++;
+		showCurrentStep();
+		if(autoadvance) {
+			startTimer();
+		} else {
+			stopTimer()
+			$("#start").show();
+			$("#pause").hide();
+			$("#resume").hide();
+		}
+	}
+}
+
+function countupTimer() {
+	$("#timer").html(timeElapsed++);
+}
+
+function startTimer() {
+	clearInterval(timer);
+	if(schedule[step].Type === "CHILL") {
+		timer = window.setInterval(countupTimer, 1000);
+	} else {
+		timer = window.setInterval(countdownTimer, 1000);
+	}
+}
+
+function stopTimer() {
+	clearInterval(timer);
+}
+
+$("#start").click(function() {
+	$("#start").hide();
+	$("#pause").show();
+	startTimer();
+});
+
+$("#pause").click(function() {
+	$("#resume").show();
+	$("#pause").hide();
+	stopTimer();
+});
+
+$("#resume").click(function() {
+	$("#resume").hide();
+	$("#pause").show();
+	startTimer();
+});
+
+function sendAlert(subject, message) {
+	$.post(
+		"/send-alert",
+		JSON.stringify({ Subject : subject, Message : message }),
+		function(data) {
+
+		}
+	);
+}
+
+</script>
+{{template "footer.html" .}}

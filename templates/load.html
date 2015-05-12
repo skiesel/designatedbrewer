@@ -1,0 +1,88 @@
+{{template "header.html" .}}
+<div style="width:50%; display:inline-block; float:left;">
+	<select id="file">
+	{{range .}}
+		<option value="{{.Name}}">{{.Name}}</option>
+	{{end}}
+	</select>
+	<button id="select">load</button>
+	<button id="confirm" style="display:none;">confirm</button>
+	
+	<form id="hiddenPostForm" method="POST" action="/brewday" style="display:none;">
+		<input name="schedule" type="text"/>
+	</form>
+</div>
+
+<div id="currentSchedule" style="width:50%; display:inline-block; float:left;">
+	<div class="scheduleStep template" style="display:none;">
+		<div class="label" style="width:60%; display:inline-block; float:left;"></div>
+		<div class="temperature" style="width:15%; display:inline-block; float:left;"></div>
+		<div class="duration" style="width:15%; display:inline-block; float:left;"></div>
+	</div>
+	<div id="mashSteps"></div>
+	<div id="spargeSteps"></div>
+	<div id="boilSteps"></div>
+	<div id="chillSteps"></div>
+</div>
+
+<script>
+var selectedFile = "";
+
+$("#select").click(function() {
+	$.post(
+		"load-file",
+		JSON.stringify({ Filename : $("#file").val() }),
+		function(data, textStatus, jqXHR) {
+			$("#confirm").show();
+			selectedFile = $("#file").val();
+			displayFile(JSON.parse(data));
+		}
+	);
+});
+
+$("#confirm").click(function() {
+	$("#hiddenPostForm input").val(selectedFile);
+	$("#hiddenPostForm").submit();
+});
+
+function displayFile(file) {
+	$.each(file.MashSteps, function(index, value) {
+		$row = $(".scheduleStep.template").clone();
+		$row.removeClass("template");
+		$row.find(".label").html("Mash Step #" + (index + 1));
+		$row.find(".temperature").html(value.Temperature + "&deg;F");
+		$row.find(".duration").html(value.Duration + "min");
+		$row.show();
+		$("#mashSteps").append($row);
+	});
+
+	$.each(file.SpargeSteps, function(index, value) {
+		$row = $(".scheduleStep.template").clone();
+		$row.removeClass("template");
+		$row.find(".label").html("Sparge Step #" + (index + 1));
+		$row.find(".temperature").html(value.Temperature + "&deg;F");
+		$row.find(".duration").html(value.Duration + "min");
+		$row.show();
+		$("#spargeSteps").append($row);
+	});
+
+	$.each(file.BoilSteps, function(index, value) {
+		$row = $(".scheduleStep.template").clone();
+		$row.removeClass("template");
+		$row.find(".label").html("Boil Step #" + (index + 1));
+		$row.find(".duration").html(value + "min");
+		$row.show();
+		$("#boilSteps").append($row);
+	});
+
+	$.each(file.ChillSteps, function(index, value) {
+		$row = $(".scheduleStep.template").clone();
+		$row.removeClass("template");
+		$row.find(".label").html("Chill Step #" + (index + 1));
+		$row.find(".temperature").html(value + "&deg;F");
+		$row.show();
+		$("#chillSteps").append($row);
+	});
+}
+</script>
+{{template "footer.html" .}}
