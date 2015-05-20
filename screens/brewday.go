@@ -1,13 +1,18 @@
 package screens
 
 import (
-	// "encoding/json"
 	"github.com/andlabs/ui"
-	// "github.com/skiesel/designatedbrewer/sensors"
+	"github.com/skiesel/designatedbrewer/sensors"
 	"fmt"
 	"reflect"
 	"time"
 )
+
+type temperatureRanges struct {
+	meanValues []float64
+	thresholds []float64
+	active []bool
+}
 
 var (
 	brewSched brewSchedule
@@ -17,8 +22,11 @@ var (
 	tempLabel1 ui.Label
 	timeLabel  ui.Label
 
-	timerState           = make(chan string, 1)
+	timerStateChannel    = make(chan string, 1)
 	timerDurationChannel = make(chan time.Duration, 1)
+
+	temperatureStateChannel     = make(chan string, 1)
+	temperatureThresholdChannel = make(chan temperatureRanges, 1)
 )
 
 func GetBrewControl() ui.Control {
@@ -51,8 +59,12 @@ func GetBrewControl() ui.Control {
 	startButton := ui.NewButton("start step")
 	startButton.OnClicked(func() {
 		timerDurationChannel <- time.Minute
-		timerState <- "countdown"
-		// timerState <- "countup"
+		timerStateChannel <- "countdown"
+
+		temperatureThresholdChannel <- temperatureRanges{active : []bool{true, true}}
+		temperatureStateChannel <- "monitor"
+
+		// timerStateChannel <- "countup"
 	})
 	autoAdvance := ui.NewCheckbox("auto-advance")
 
@@ -119,7 +131,7 @@ func timerRoutine() {
 
 	for {
 		if state == "" { //if not doing anything just block
-			state = <-timerState
+			state = <-timerStateChannel
 			timePoint = time.Now()
 			if state == "countdown" {
 				timerDuration := <-timerDurationChannel
@@ -127,7 +139,7 @@ func timerRoutine() {
 			}
 		}
 		select {
-		case state = <-timerState:
+		case state = <-timerStateChannel:
 			timePoint = time.Now()
 			if state == "countdown" {
 				timerDuration := <-timerDurationChannel
@@ -152,8 +164,28 @@ func timerRoutine() {
 }
 
 func temperatureRoutine() {
-	// for ;; {
-	// 	// readings := sensors.GetThermometerReadings()
-	// 	time.Sleep(time.Second)
-	// }
+	state := ""
+	var ranges temperatureRanges
+	for ;; {
+		if state == "" { //if not doing anything just block
+			state = <-temperatureStateChannel
+			ranges = <-temperatureThresholdChannel
+		}
+
+		select {
+		case state = <-temperatureStateChannel:
+			if state != "" {
+				ranges = <-temperatureThresholdChannel
+			}
+		default:
+			readings := sensors.GetThermometerReadings()
+			for i, active := range ranges.active {
+				if active {
+					fmt.Printf("%d) %g\n", i, readings[i])
+				}
+			}
+			time.Sleep(time.Second * 5)
+		}
+		
+	}
 }
