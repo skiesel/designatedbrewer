@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"fmt"
-	"net/http"
-	"golang.org/x/crypto/ssh"
 	"github.com/pkg/sftp"
+	"golang.org/x/crypto/ssh"
+	"net/http"
 	// "github.com/skiesel/designatedbrewer/utils"
 	"net"
 )
@@ -14,11 +14,11 @@ func Push(w http.ResponseWriter, r *http.Request) {
 	config.SetDefaults()
 
 	clientConfig := &ssh.ClientConfig{
-		Config : config,
-		User : "designatedbrewer@kieselnet.com",
-		Auth : []ssh.AuthMethod{ ssh.Password("F7bJ8g,pf(utT2Z?Hk") },
-		HostKeyCallback : nil,
-		ClientVersion : "",
+		Config:          config,
+		User:            "designatedbrewer@kieselnet.com",
+		Auth:            []ssh.AuthMethod{ssh.Password("F7bJ8g,pf(utT2Z?Hk")},
+		HostKeyCallback: nil,
+		ClientVersion:   "",
 	}
 
 	tcpCon, err := net.Dial("tcp", "ftp.longsincehere.com:22")
@@ -61,7 +61,6 @@ func Push(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	fmt.Println(fi)
-
 
 	fmt.Fprint(w, "success")
 }

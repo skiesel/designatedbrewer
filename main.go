@@ -4,8 +4,8 @@ import (
 	"github.com/andlabs/ui"
 	"github.com/skiesel/designatedbrewer/handlers"
 	"github.com/skiesel/designatedbrewer/screens"
-	"os"
 	"net/http"
+	"os"
 )
 
 var window ui.Window

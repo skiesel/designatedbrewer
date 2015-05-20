@@ -1,9 +1,9 @@
 package screens
 
 import (
+	"fmt"
 	"github.com/andlabs/ui"
 	"github.com/skiesel/designatedbrewer/sensors"
-	"fmt"
 	"reflect"
 	"time"
 )
@@ -11,7 +11,7 @@ import (
 type temperatureRanges struct {
 	meanValues []float64
 	thresholds []float64
-	active []bool
+	active     []bool
 }
 
 var (
@@ -61,7 +61,7 @@ func GetBrewControl() ui.Control {
 		timerDurationChannel <- time.Minute
 		timerStateChannel <- "countdown"
 
-		temperatureThresholdChannel <- temperatureRanges{active : []bool{true, true}}
+		temperatureThresholdChannel <- temperatureRanges{active: []bool{true, true}}
 		temperatureStateChannel <- "monitor"
 
 		// timerStateChannel <- "countup"
@@ -166,7 +166,7 @@ func timerRoutine() {
 func temperatureRoutine() {
 	state := ""
 	var ranges temperatureRanges
-	for ;; {
+	for {
 		if state == "" { //if not doing anything just block
 			state = <-temperatureStateChannel
 			ranges = <-temperatureThresholdChannel
@@ -186,6 +186,6 @@ func temperatureRoutine() {
 			}
 			time.Sleep(time.Second * 5)
 		}
-		
+
 	}
 }
