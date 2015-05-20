@@ -1,0 +1,33 @@
+<html>
+	<head>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+		<link rel="stylesheet" href="/css/header.css">
+
+		<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
+		<script type="text/javascript" src="/js/header.js"></script>
+
+	</head>
+	<body>
+	<div class="container-fluid">
+	
+		<audio id="alertSound" src="/sounds/alert.mp3"></audio>
+		<audio id="doneSound" src="/sounds/done.mp3"></audio>
+
+		<div class="row">
+			<div class="col-xs-12">
+				<ul class="nav nav-tabs">
+					<li role="presentation" {{ if eq .Page "HOME" }}class="active"{{ end }}><a href="/">Home</a></li>
+					<li role="presentation" {{ if eq .Page "CREATE" }}class="active"{{ end }}><a href="/create">Create Schedule</a></li>
+					<li role="presentation" {{ if eq .Page "LOAD" }}class="active"{{ end }}><a href="/load">Load Schedule</a></li>
+					{{ if eq .Page "BREW" }}<li role="presentation" class="active"><a href="#">BREW!</a></li>{{ end }}
+				</ul>
+			</div>
+		</div>
+		<div class="row">
+			<div id="alert" class="row alert alert-warning" role="alert" style="display:none;">
+				<div id="messageArea" class="col-xs-11 text-center">TEST</div>
+				<div class="col-xs-1"><button id="closeLocalMessage" type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+			</div>
+		</div>

@@ -1,0 +1,79 @@
+{{template "header.html" .}}
+<link rel="stylesheet" href="/css/brewdays.css">
+
+<div class="row">
+	<div class="col-xs-12 text-center">
+		<div class="row">
+			<div id="timer" class="col-xs-12">0</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-6">
+				<span id="temperature0Label"></span>&nbsp;<span id="temperature0"></span>
+			</div>
+			<div class="col-xs-6">
+				<span id="temperature1Label"></span>&nbsp;<span id="temperature1"></span>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-4"></div>
+			<div class="col-xs-4">
+				<button id="start" class="btn btn-default">start step</button>
+				<button id="pause" class="btn btn-default" style="display:none;">pause</button>
+				<button id="resume" class="btn btn-default" style="display:none;">resume</button>
+			</div>
+			<div class="col-xs-4">
+				<input id="autoadvance" type="checkbox" />auto-advance
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div id="currentSchedule" class="col-xs-12">
+		<table class="table table-bordered">
+		
+			{{range .Data.MashSteps}}
+			<tr class="scheduleStep mash">
+				<td class="stepType">Mash Step # </td>
+				<td class="temperature">{{.Temperature}}&deg;F</td>
+				<td class="duration">{{.Duration}}min</td>
+			</tr>
+			{{end}}
+			{{range .Data.SpargeSteps}}
+			<tr class="scheduleStep sparge">
+				<td class="stepType">Sparge Step # </td>
+				<td class="temperature">{{.Temperature}}&deg;F</td>
+				<td class="duration">{{.Duration}}min</td>
+			</tr>
+			{{end}}
+			{{range .Data.BoilSteps}}
+			<tr class="scheduleStep boil">
+				<td class="stepType">Boil Step # </td>
+				<td class="temperature">--</td>
+				<td class="duration">{{.}}min</td>
+			</tr>
+			{{end}}
+			{{range .Data.ChillSteps}}
+			<tr class="scheduleStep chil">
+				<td class="stepType">Chill Step # </td>
+				<td class="temperature">{{.}}&deg;F</td>
+				<td class="duration">--</td>
+			</tr>
+			{{end}}
+		</table>
+	</div>
+</div>
+
+<script>
+	var schedule =
+		[
+			{{range .Data.MashSteps}} { Type : "MASH", Temperature : {{.Temperature}}, Duration : {{.Duration}} }, {{end}}
+			{{range .Data.SpargeSteps}} { Type : "SPARGE", Temperature : {{.Temperature}}, Duration : {{.Duration}} }, {{end}}
+			{{range .Data.BoilSteps}} { Type : "BOIL", Duration : {{.}} }, {{end}}
+			{{range .Data.ChillSteps}} { Type : "CHILL", Temperature : {{.}} }, {{end}}
+		];
+
+	var temperatureThreshold = 1;
+</script>
+<script type="text/javascript" src="/js/brewday.js"></script>
+{{template "footer.html" .}}
