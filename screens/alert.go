@@ -1,4 +1,4 @@
-package handlers
+package screens
 
 import (
 	"crypto/tls"

@@ -1,0 +1,32 @@
+<html>
+	<head>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+
+		<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+	</head>
+	<body>
+		<div class="container-fluid">
+			<div class="row text-center">
+				<div class="col-xs-12">
+					Currently <span id="brewStep"></span>
+				</div>
+			</div>
+		</div>
+	<script>
+
+	function updateUI() {
+		$.get(
+			"brewstats.json",
+			function(json) {
+				$("#brewStep").html(json.status);
+			}
+		);
+	}
+	updateUI();
+
+	window.setInterval(updateUI, 5000);
+
+	</script>
+	</body>
+</html>

@@ -1,11 +1,11 @@
 package sensors
 
 import (
-	// "io/ioutil"
-	// "os/exec"
-	// "strconv"
-	// "strings"
-	// "time"
+// "io/ioutil"
+// "os/exec"
+// "strconv"
+// "strings"
+// "time"
 )
 
 // const (
