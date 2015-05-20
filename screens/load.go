@@ -31,7 +31,7 @@ func GetLoadControl() ui.Control {
 
 	selectButton := ui.NewButton("Load")
 
-	selectButton.OnClicked(loadFile)
+	selectButton.OnClicked(loadBrewDayFile)
 
 	stack := ui.NewVerticalStack(fileTable, previewTable, selectButton)
 
@@ -79,7 +79,7 @@ func loadPreview() {
 	previewTable.Unlock()
 }
 
-func loadFile() {
+func loadBrewDayFile() {
 	index := fileTable.Selected()
 	if index < 0 {
 		return
@@ -91,5 +91,5 @@ func loadFile() {
 	}
 
 	json.Unmarshal(fileContents, &brewSched)
-	//somehow switch tabs
+	initBrewDay()
 }
